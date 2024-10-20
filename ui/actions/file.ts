@@ -5,7 +5,7 @@ export async function deleteFile(filename: string) {
     `${process.env.NEXT_PUBLIC_API_URL}/file?filename=${filename}`,
     {
       method: "DELETE",
-    }
+    },
   );
 
   if (!res.ok) throw new Error(await res.text());

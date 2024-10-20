@@ -23,7 +23,6 @@ export default function JobStatus({ jobId, onStatusChange }: Props) {
       subtitles_frequency: 0,
       language: "",
       model_size: "",
-      hugging_face_token: "",
     },
   });
   let intervalId: NodeJS.Timeout;

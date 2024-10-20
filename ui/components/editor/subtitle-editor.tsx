@@ -11,6 +11,7 @@ import SubtitleSegment from "@/components/editor/subtitle-segment";
 import { editTranscription } from "@/actions/transcription";
 
 import MagicButtons from "./magic-buttons";
+import VideoPlayer from "./video-player";
 
 interface Props {
   language: string;
@@ -87,6 +88,12 @@ export default function SubtitleEditor({
 
   return (
     <div className="flex flex-col gap-4">
+      <VideoPlayer
+        segments={segments}
+        src={
+          "https://music-ai-sub-upload-bucket.s3.amazonaws.com/uploads/conquista-cut.mp4"
+        }
+      />
       <Button
         className="my-2"
         color="secondary"

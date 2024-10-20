@@ -1,5 +1,6 @@
 import { title } from "@/components/primitives";
 import Converter from "@/components/converter/converter";
+import VideoPlayer from "@/components/editor/video-player";
 
 interface Props {
   searchParams: {
@@ -18,6 +19,13 @@ export default function ConverterPage({ searchParams }: Props) {
       <p className="text-lg">
         Instantly create and edit subtitles from a music video or audio
       </p>
+      <VideoPlayer
+        // segments={segments}
+        segments={[]}
+        src={
+          "https://music-ai-sub-upload-bucket.s3.amazonaws.com/uploads/conquista-cut.mp4"
+        }
+      />
       <Converter videoFile={selectedVideo} />
     </>
   );

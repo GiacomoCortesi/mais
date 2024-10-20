@@ -78,7 +78,7 @@ export default function TranscriptionTable({ transcriptions }: Props) {
                 <AiFillDelete
                   onClick={deleteTranscription.bind(
                     null,
-                    transcriptions[index]?.id
+                    transcriptions[index]?.id,
                   )}
                 />
               </span>

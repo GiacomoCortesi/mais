@@ -33,6 +33,7 @@ export default function GenerateButton({ videoFile }: Props) {
 
   const onClick = async () => {
     const { id } = await startJob(videoFile, options);
+
     setIsRunning(true);
     setJobId(id);
   };

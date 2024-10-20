@@ -16,7 +16,7 @@ export default function PreviewImage({ alt, src, onSelectVideo }: Props) {
   const handleClickOutside = (event: Event) => {
     if (
       cardRefs?.current?.every(
-        (ref) => ref && !ref.contains(event.target as Node)
+        (ref) => ref && !ref.contains(event.target as Node),
       )
     ) {
       onSelectVideo("");
@@ -31,7 +31,7 @@ export default function PreviewImage({ alt, src, onSelectVideo }: Props) {
           `${process.env.NEXT_PUBLIC_API_URL}${src}`,
           {
             method: "HEAD",
-          }
+          },
         );
 
         if (response.ok) {

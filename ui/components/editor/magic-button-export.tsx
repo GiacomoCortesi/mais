@@ -55,12 +55,14 @@ export default function MagicButtonExport({ transcriptionId }: Props) {
 
   const descriptionsMap = {
     srt: "Export subtitles in srt format",
-    stt: "Export subtitles in stt format",
+    vtt: "Export subtitles in vtt format",
+    video: "Export video file with subtitles",
   };
 
   const labelsMap: { [key: string]: string } = {
     srt: "srt",
-    stt: "stt",
+    vtt: "vtt",
+    video: "video",
   };
 
   // Convert the Set to an Array and get the first value.
@@ -89,8 +91,11 @@ export default function MagicButtonExport({ transcriptionId }: Props) {
           <DropdownItem key="srt" description={descriptionsMap["srt"]}>
             {labelsMap["srt"]}
           </DropdownItem>
-          <DropdownItem key="stt" description={descriptionsMap["stt"]}>
-            {labelsMap["stt"]}
+          <DropdownItem key="vtt" description={descriptionsMap["vtt"]}>
+            {labelsMap["vtt"]}
+          </DropdownItem>
+          <DropdownItem key="video" description={descriptionsMap["video"]}>
+            {labelsMap["video"]}
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
