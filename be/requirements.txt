@@ -20,3 +20,6 @@ torch == 2.3.1
 pydantic
 moviepy
 rq
+
+boto3
+remotion-lambda == 4.0.221

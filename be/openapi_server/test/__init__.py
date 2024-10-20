@@ -10,6 +10,7 @@ from openapi_server.domain.services.transcription import TranscriptionService
 from fakeredis import FakeStrictRedis
 import os
 
+
 class BaseTestCase(TestCase):
     def create_app(self):
         logging.getLogger('connexion.operation').setLevel('ERROR')
@@ -18,10 +19,8 @@ class BaseTestCase(TestCase):
         app.add_api('openapi.yaml', pythonic_params=True)
         js = JobService(FakeStrictRedis())
         app.app.config.update({
-        'file_service': FileService(),
-        'job_service': js,
-        'transcription_service': TranscriptionService(os.environ.get('OPENAI_TOKEN', ""))
+            'file_service': FileService(),
+            'job_service': js,
+            'transcription_service': TranscriptionService(os.environ.get('OPENAI_TOKEN', ""))
         })
         return app.app
-    
-    

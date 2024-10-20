@@ -3,8 +3,7 @@ import unittest
 from flask import json
 from unittest.mock import MagicMock
 
-from openapi_server.models.transcription_response import TranscriptionResponse  # noqa: E501
-from openapi_server.models.transcription_post_request import TranscriptionPostRequest  # noqa: E501
+from openapi_server.models.transcription_post_request import TranscriptionPostRequest
 from openapi_server.test import BaseTestCase
 from openapi_server.models.transcription_data import TranscriptionData as ApiTranscriptionData
 from openapi_server.domain.models.transcription import Transcription as DomainTranscription
@@ -19,8 +18,14 @@ class TestTranscriptionController(BaseTestCase):
 
         Creates a new transcription
         """
-        transcription_post_request = TranscriptionPostRequest(data=ApiTranscriptionData(segments=[], word_segments=[], language="it"), job_id="dummy", video_file="dummy.mov")
-        headers = { 
+        transcription_post_request = TranscriptionPostRequest(
+            data=ApiTranscriptionData(
+                segments=[],
+                word_segments=[],
+                language="it"),
+            job_id="dummy",
+            video_file="dummy.mov")
+        headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         }
@@ -43,22 +48,31 @@ class TestTranscriptionController(BaseTestCase):
 
         ts = self.app.config['transcription_service']
 
-        ts.get = MagicMock(return_value = DomainTranscription(id="dummy", data=DomainTranscriptionData(segments=[], word_segments=[], language="it"), job_id="dummy", filename="dummy.mov"))
-        ts.edit = MagicMock(return_value = None)
- 
-        response = self.client.open(
-            '/transcription/{transcription_id}/clear'.format(transcription_id='transcription_id_example'),
-            method='POST',
-            headers=headers)
-        self.assertStatus(response, 204,
-                       'Response body is : ' + response.data.decode('utf-8'))
+        ts.get = MagicMock(
+            return_value=DomainTranscription(
+                id="dummy",
+                data=DomainTranscriptionData(
+                    segments=[],
+                    word_segments=[],
+                    language="it"),
+                job_id="dummy",
+                filename="dummy.mov"))
+        ts.edit = MagicMock(return_value=None)
+
+        response = self.client.open('/transcription/{transcription_id}/clear'.format(
+            transcription_id='transcription_id_example'), method='POST', headers=headers)
+        self.assertStatus(
+            response,
+            204,
+            'Response body is : ' +
+            response.data.decode('utf-8'))
 
     def test_transcription_transcription_id_delete(self):
         """Test case for transcription_transcription_id_delete
 
         Deletes a specific transcription
         """
-        headers = { 
+        headers = {
         }
 
         ts = self.app.config["transcription_service"]
@@ -68,37 +82,51 @@ class TestTranscriptionController(BaseTestCase):
             '/transcription/{transcription_id}'.format(transcription_id='transcription_id_example'),
             method='DELETE',
             headers=headers)
-        self.assertStatus(response, 204,
-                       'Response body is : ' + response.data.decode('utf-8'))
+        self.assertStatus(
+            response,
+            204,
+            'Response body is : ' +
+            response.data.decode('utf-8'))
 
     def test_transcription_transcription_id_fix_post(self):
         """Test case for transcription_transcription_id_fix_post
 
         Attempts to fix all subtitles text with AI
         """
-        headers = { 
+        headers = {
         }
-        
+
         ts = self.app.config["transcription_service"]
         ts.fix = MagicMock()
         response = self.client.open(
             '/transcription/{transcription_id}/fix'.format(transcription_id='transcription_id_example'),
             method='POST',
             headers=headers)
-        self.assertStatus(response, 204,
-                       'Response body is : ' + response.data.decode('utf-8'))
+        self.assertStatus(
+            response,
+            204,
+            'Response body is : ' +
+            response.data.decode('utf-8'))
 
     def test_transcription_transcription_id_get(self):
         """Test case for transcription_transcription_id_get
 
         Retrieves a specific transcription
         """
-        headers = { 
+        headers = {
             'Accept': 'application/json',
         }
 
         ts = self.app.config["transcription_service"]
-        ts.get = MagicMock(return_value = DomainTranscription(id="dummy", data=DomainTranscriptionData(segments=[], word_segments=[], language="it"), job_id="dummy", filename="dummy.mov"))
+        ts.get = MagicMock(
+            return_value=DomainTranscription(
+                id="dummy",
+                data=DomainTranscriptionData(
+                    segments=[],
+                    word_segments=[],
+                    language="it"),
+                job_id="dummy",
+                filename="dummy.mov"))
 
         response = self.client.open(
             '/transcription/{transcription_id}'.format(transcription_id='transcription_id_example'),
@@ -112,7 +140,7 @@ class TestTranscriptionController(BaseTestCase):
 
         Adapts all subtitles time windows to make them adjacent
         """
-        headers = { 
+        headers = {
         }
         ts = self.app.config["transcription_service"]
         ts.fit = MagicMock()
@@ -120,8 +148,11 @@ class TestTranscriptionController(BaseTestCase):
             '/transcription/{transcription_id}/fit'.format(transcription_id='transcription_id_example'),
             method='POST',
             headers=headers)
-        self.assertStatus(response, 204,
-                       'Response body is : ' + response.data.decode('utf-8'))
+        self.assertStatus(
+            response,
+            204,
+            'Response body is : ' +
+            response.data.decode('utf-8'))
 
 
 if __name__ == '__main__':

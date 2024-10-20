@@ -4,6 +4,7 @@ from openapi_server.domain.models.id import ID
 
 T = TypeVar('T')
 
+
 class BaseRepository(ABC, Generic[T]):
     @abstractmethod
     def get_all(self) -> List[T]:
@@ -24,7 +25,7 @@ class BaseRepository(ABC, Generic[T]):
     @abstractmethod
     def delete(self, item_id: ID) -> None:
         pass
-    
+
     @abstractmethod
     def delete_all(self) -> None:
         pass

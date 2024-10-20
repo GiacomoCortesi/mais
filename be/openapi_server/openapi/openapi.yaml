@@ -490,6 +490,7 @@ paths:
           enum:
           - srt
           - stt
+          - video
           type: string
         style: form
       responses:

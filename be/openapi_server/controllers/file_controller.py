@@ -1,16 +1,13 @@
 import connexion
-from typing import Dict
-from typing import Tuple
-from typing import Union
 
 from openapi_server.domain.services.file import InvalidFileException
 from openapi_server.mappers.mappers import FileMapper
-from openapi_server import util
 from pathlib import Path
 from connexion.problem import problem
+import io
 
 from flask import current_app
-from flask import request
+
 
 def file_delete(filename=None):  # noqa: E501
     """Delete uploaded file(s)
@@ -27,6 +24,7 @@ def file_delete(filename=None):  # noqa: E501
     else:
         current_app.config['file_service'].delete_all()
 
+
 def file_get():  # noqa: E501
     """Retrieves the list of uploaded files
 
@@ -37,6 +35,7 @@ def file_get():  # noqa: E501
     """
     video_files = current_app.config['file_service'].get_all()
     return [FileMapper.map_to_api(domain_file) for domain_file in video_files]
+
 
 def file_post(f=None):  # noqa: E501
     """Uploads a audio or video file
@@ -53,9 +52,18 @@ def file_post(f=None):  # noqa: E501
 
     f = connexion.request.files['file']
     if f.filename == '':
-        return problem(title="BadRequest", detail="Filename missing", status=400)
-    
+        return problem(
+            title="BadRequest",
+            detail="Filename missing",
+            status=400)
+
     try:
-        current_app.config['file_service'].add(Path(f.filename), f.stream)
+        current_app.config['file_service'].add(
+            Path(
+                f.filename), io.BytesIO(
+                f.stream.read()))
     except InvalidFileException:
-        return problem(title="BadRequest", detail="Unsupported file format", status=400)
+        return problem(
+            title="BadRequest",
+            detail="Unsupported file format",
+            status=400)

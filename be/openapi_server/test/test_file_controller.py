@@ -1,14 +1,13 @@
 import unittest
 
-from flask import json
 
-from openapi_server.models.file_response import FileResponse  # noqa: E501
 from openapi_server.domain.models.file import File
 from openapi_server.test import BaseTestCase
 from unittest.mock import MagicMock
 from faker import Faker
 
 fake = Faker()
+
 
 def create_random_file() -> File:
     return File(
@@ -21,6 +20,7 @@ def create_random_file() -> File:
         image_path=fake.file_path()
     )
 
+
 class TestFileController(BaseTestCase):
     """FileController integration test stubs"""
 
@@ -29,12 +29,12 @@ class TestFileController(BaseTestCase):
 
         Retrieves the list of uploaded videos
         """
-        headers = { 
+        headers = {
             'Accept': 'application/json',
         }
 
         vs = self.app.config["file_service"]
-        vs.get = MagicMock(return_value = [create_random_file()])
+        vs.get = MagicMock(return_value=[create_random_file()])
 
         response = self.client.open(
             '/file',
@@ -49,7 +49,7 @@ class TestFileController(BaseTestCase):
 
         Uploads a video or audio file
         """
-        headers = { 
+        headers = {
             'Content-Type': 'multipart/form-data',
         }
         data = dict(file='/path/to/file')

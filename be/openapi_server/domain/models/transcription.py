@@ -3,11 +3,13 @@ from openapi_server.domain.models.id import ID
 
 from typing import List, Optional
 
+
 class Word(BaseModel):
     word: str
     start: float
     end: float
     score: float
+
 
 class Segment(BaseModel):
     start: float
@@ -15,10 +17,12 @@ class Segment(BaseModel):
     text: str
     words: List[Word]
 
+
 class TranscriptionData(BaseModel):
     segments: List[Segment]
     word_segments: List[Word]
     language: str
+
 
 class Transcription(BaseModel):
     id: Optional[ID] = None

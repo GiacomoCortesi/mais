@@ -5,8 +5,10 @@ from openapi_server.domain.models.id import ID
 import uuid
 from typing import Dict
 
+
 class FileRepository(BaseRepository[File]):
     pass
+
 
 class InMemoryFileRepository(FileRepository):
     def __init__(self):
@@ -14,7 +16,7 @@ class InMemoryFileRepository(FileRepository):
 
     def get_all(self) -> List[File]:
         return list(self.files.values())
-    
+
     def get_by_id(self, id: ID) -> File:
         return self.files.get(id, None)
 
@@ -22,12 +24,12 @@ class InMemoryFileRepository(FileRepository):
         if not f.id:
             f.id = str(uuid.uuid())
         self.files[f.filename] = f
-    
+
     def delete(self, id: ID) -> None:
         self.files.pop(id, None)
-    
+
     def delete_all(self) -> None:
         self.files = {}
-    
+
     def update(self, f: File) -> None:
         self.files[f.filename] = f

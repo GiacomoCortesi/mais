@@ -11,6 +11,7 @@ from openapi_server.models.job_response import JobResponse as ApiJob
 TSource = TypeVar('TSource')
 TDestination = TypeVar('TDestination')
 
+
 class Mapper(ABC, Generic[TSource, TDestination]):
     @abstractmethod
     def map_to_domain(self, source: TSource) -> TDestination:
@@ -20,6 +21,7 @@ class Mapper(ABC, Generic[TSource, TDestination]):
     def map_to_api(self, source: TDestination) -> TSource:
         pass
 
+
 class TranscriptionMapper(Mapper[ApiTranscription, DomainTranscription]):
     @classmethod
     def map_to_domain(self, source: ApiTranscription) -> DomainTranscription:
@@ -28,7 +30,8 @@ class TranscriptionMapper(Mapper[ApiTranscription, DomainTranscription]):
     @classmethod
     def map_to_api(self, source: DomainTranscription) -> ApiTranscription:
         return ApiTranscription.from_dict(source.model_dump())
-    
+
+
 class FileMapper(Mapper[ApiFile, DomainFile]):
     @classmethod
     def map_to_domain(self, source: ApiFile) -> DomainFile:
@@ -36,7 +39,11 @@ class FileMapper(Mapper[ApiFile, DomainFile]):
 
     @classmethod
     def map_to_api(self, source: DomainFile) -> ApiFile:
-        return ApiFile(id=source.id, filename=source.filename, upload_date=source.upload_date)
+        return ApiFile(
+            id=source.id,
+            filename=source.filename,
+            upload_date=source.upload_date)
+
 
 class JobMapper(Mapper[ApiJob, DomainJob]):
     @classmethod

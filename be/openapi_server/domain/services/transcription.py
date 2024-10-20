@@ -1,29 +1,36 @@
+import io
 import requests
 import uuid
 import json
 import copy
 from datetime import timedelta
-from openapi_server.domain.repositories.transcription_repository import TranscriptionRepository, InMemoryTranscriptionRepository
-from openapi_server.domain.models.transcription import Transcription, Segment
+from openapi_server.domain.repositories.transcription_repository import TranscriptionRepository
+from openapi_server.domain.repositories.transcription_repository import InMemoryTranscriptionRepository
+from openapi_server.domain.models.transcription import Transcription
 from openapi_server.domain.models.id import ID
-from typing import List
+from typing import IO, List
+
 
 class TranscriptionNotFoundException(Exception):
     pass
 
+
 class TranscriptionService:
-    def __init__(self, openai_token, repository: TranscriptionRepository = None):
+    def __init__(
+            self,
+            openai_token,
+            repository: TranscriptionRepository = None):
         self.openai_token = openai_token
         if not repository:
             repository = InMemoryTranscriptionRepository()
         self.repository = repository
-    
+
     def add(self, transcription: Transcription):
         transcription_id = str(uuid.uuid4())
         transcription.id = transcription_id
         transcription.original_data = copy.deepcopy(transcription.data)
         self.repository.add(transcription)
-    
+
         return transcription
 
     def get_all(self) -> List[Transcription]:
@@ -39,13 +46,13 @@ class TranscriptionService:
         transcription = self.get(id)
         transcription.data = transcription_data
         self.repository.update(transcription)
-    
+
     def delete(self, id):
         try:
             self.repository.delete(id)
         except KeyError:
             raise TranscriptionNotFoundException
-    
+
     def fit(self, id):
         transcription = self.get(id)
         segments = copy.deepcopy(transcription.data.segments)
@@ -57,8 +64,8 @@ class TranscriptionService:
             segment_end = segment.end
 
             segment.start = segment_start
-            segment.end = segment_end       
-        
+            segment.end = segment_end
+
         transcription.data.segments = segments
 
         self.edit(id, transcription.data)
@@ -86,7 +93,7 @@ class TranscriptionService:
         {transcription_data}
         '''
         data = {
-            "response_format": { "type": "json_object" },
+            "response_format": {"type": "json_object"},
             "model": "gpt-3.5-turbo",
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.7
@@ -96,15 +103,17 @@ class TranscriptionService:
             return
 
         response_data = response.json()
-        segments = json.loads(response_data["choices"][0]["message"]["content"])["segments"]
+        segments = json.loads(
+            response_data["choices"][0]["message"]["content"])["segments"]
 
         for index, segment in enumerate(segments):
             if index < len(transcription.data.segments):
-                transcription.data.segments[index].text = segment.get("text", "")
-        
+                transcription.data.segments[index].text = segment.get(
+                    "text", "")
+
         self.edit(id, transcription.data)
-    
-    def create_stt(self, id):
+
+    def create_vtt(self, id) -> IO[bytes]:
         transcription = self.get(id)
         stt_content = ""
         for index, segment in enumerate(transcription.data.segments):
@@ -112,10 +121,10 @@ class TranscriptionService:
             end_time = self.format_time(segment.end)
             text = segment.text
             stt_content += f"{index}\n{start_time} --> {end_time}\n{text}\n\n"
-        
-        return stt_content
-            
-    def create_srt(self, id):
+
+        return io.BytesIO(stt_content.encode())
+
+    def create_srt(self, id) -> IO[bytes]:
         transcription = self.get(id)
         srt_content = ""
         for index, segment in enumerate(transcription.data.segments):
@@ -123,11 +132,10 @@ class TranscriptionService:
             end_time = self.format_time(segment.end)
             text = segment.text
             srt_content += f"{index + 1}\n{start_time} --> {end_time}\n{text}\n\n"
-        
-        return srt_content
-    
+
+        return io.BytesIO(srt_content.encode())
+
     @staticmethod
     def format_time(seconds):
         td = timedelta(seconds=seconds)
         return str(td)[:-3].replace('.', ',')
-        

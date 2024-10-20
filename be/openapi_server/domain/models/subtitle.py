@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class Config(BaseModel):
     model_size: str
     subtitles_frequency: int

@@ -13,7 +13,16 @@ def main():
 
     # disable CORS for all endpoints
     # specify allowed origins for more secure configuration
-    CORS(app.app, methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], send_wildcard=True)
+    CORS(
+        app.app,
+        methods=[
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE",
+            "OPTIONS"],
+        send_wildcard=True)
 
     host = '0.0.0.0'
     port = 8080
@@ -23,17 +32,18 @@ def main():
     def serve_video(subpath, filename):
         directory = '/tmp/mais/video/' + subpath
         return send_from_directory(directory, filename)
-    
+
     # this endpoint respond to all preflight OPTIONS requests with a 200 success for the sake of CORS
     # (e.g. to allow DELETE requests from the UI when you don't use a reverse proxy)
     @app.app.before_request
     def before_request():
-        headers = {'Access-Control-Allow-Origin': '*',
-               'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-               'Access-Control-Allow-Headers': 'Content-Type'}
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'}
         if request.method.lower() == 'options':
             return jsonify(headers), 200
-    
+
     app.app.json_encoder = encoder.JSONEncoder
     app.add_api('openapi.yaml',
                 arguments={'title': 'AI Music Subtitles - OpenAPI 3.0'},
