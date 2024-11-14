@@ -6,9 +6,12 @@ from openapi_server import encoder
 from openapi_server import config
 from flask_cors import CORS
 from flask import send_from_directory, request, jsonify
-
+from openapi_server.logging.config import setup_logging
+from openapi_server import log
 
 def main():
+    setup_logging()
+
     app = connexion.App(__name__, specification_dir='./openapi/')
 
     # disable CORS for all endpoints
@@ -27,12 +30,6 @@ def main():
     host = '0.0.0.0'
     port = 8080
 
-    # this endpoint serve the uploaded video files
-    @app.route('/videos/<path:subpath>/<filename>')
-    def serve_video(subpath, filename):
-        directory = '/tmp/mais/video/' + subpath
-        return send_from_directory(directory, filename)
-
     # this endpoint respond to all preflight OPTIONS requests with a 200 success for the sake of CORS
     # (e.g. to allow DELETE requests from the UI when you don't use a reverse proxy)
     @app.app.before_request
@@ -49,6 +46,9 @@ def main():
                 arguments={'title': 'AI Music Subtitles - OpenAPI 3.0'},
                 pythonic_params=True)
     app.app.config.update(config.get_config())
+
+    log.info("MAIS application started")
+
     app.run(port=port, host=host)
 
 

@@ -1,11 +1,7 @@
 from rq import Queue
+from openapi_server.domain.exceptions import JobNotFoundException
 from openapi_server.domain.models.job import Job
 from typing import List, Any
-
-
-class JobNotFoundException(Exception):
-    pass
-
 
 class JobService:
     def __init__(self, conn):

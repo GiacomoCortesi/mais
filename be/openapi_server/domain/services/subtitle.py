@@ -1,3 +1,4 @@
+import logging
 from moviepy.editor import AudioFileClip
 from spleeter.separator import Separator
 import whisperx
@@ -6,6 +7,8 @@ import os
 import uuid
 import time
 from pathlib import Path
+
+from openapi_server.domain.exceptions import SubtitleServiceException
 
 
 class SubtitleService:
@@ -19,6 +22,9 @@ class SubtitleService:
             separate_vocals=True,
             cache_path: Path = Path("/tmp/mais"),
             captions_path: Path = Path("captions")):
+
+        self.logger = logging.getLogger(__name__)
+
         self.model_size = model_size
         self.language = language
         self.subtitles_frequency = subtitles_frequency
@@ -36,13 +42,18 @@ class SubtitleService:
         # use CUDA if graphic cards allow it, fallback to CPU otherwise
         self.device: str = ""
         if torch.cuda.is_available():
+            self.logger.info("using cuda")
             self.device = "cuda"
         else:
+            self.logger.warning("cuda not available, fallback to cpu")
             self.device = "cpu"
 
     def _extract_audio_from_video(self, video_path: Path):
         # Create an AudioFileClip object
-        audio = AudioFileClip(video_path)
+        try:
+            audio = AudioFileClip(video_path)
+        except Exception as e:
+            raise SubtitleServiceException(f"Failed to extract audio from video: {e}")
 
         audio_file_path = self.cache_path / video_path.stem + '.mp3'
 
@@ -63,11 +74,11 @@ class SubtitleService:
 
     def generate_subtitles(self, video_url):
         # Extract audio from video
-        print("extracting audio from video")
+        self.logger.info("extracting audio from video")
         raw_audio_path = self._extract_audio_from_video(video_url)
 
         # Extract vocals from audio
-        print("extracting vocals from audio")
+        self.logger.info("extracting vocals from audio")
         audio_path = self._extract_vocals_from_audio(raw_audio_path)
 
         batch_size = 16  # reduce if low on GPU mem
@@ -87,15 +98,14 @@ class SubtitleService:
         # save model to local path (optional)
         # model_dir = "/path/"
         # model = whisperx.load_model("large-v2", device, compute_type=compute_type, download_root=model_dir)
-
         audio = whisperx.load_audio(audio_path)
         result = model.transcribe(
             audio,
             batch_size=batch_size,
             language=self.language,
             chunk_size=self.subtitles_frequency)
-        print("transcription before alignment: ",
-              result["segments"])  # before alignment
+        self.logger.debug("transcription before alignment: ",
+              result["segments"])
 
         # delete model if low on GPU resources
         # import gc; gc.collect(); torch.cuda.empty_cache(); del model
@@ -111,7 +121,7 @@ class SubtitleService:
             self.device,
             return_char_alignments=False)
 
-        print("transcription after alignment: ",
+        self.logger.debug("transcription after alignment: ",
               result_aligned["segments"])  # after alignment
 
         # delete model if low on GPU resources

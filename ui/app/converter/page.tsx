@@ -23,7 +23,7 @@ export default function ConverterPage({ searchParams }: Props) {
         // segments={segments}
         segments={[]}
         src={
-          "https://music-ai-sub-upload-bucket.s3.amazonaws.com/uploads/conquista-cut.mp4"
+          "http://localhost:8080/file/conquista-cut.mp4"
         }
       />
       <Converter videoFile={selectedVideo} />

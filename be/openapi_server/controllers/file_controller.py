@@ -5,6 +5,7 @@ from openapi_server.mappers.mappers import FileMapper
 from pathlib import Path
 from connexion.problem import problem
 import io
+from flask import send_file
 
 from flask import current_app
 
@@ -36,6 +37,9 @@ def file_get():  # noqa: E501
     video_files = current_app.config['file_service'].get_all()
     return [FileMapper.map_to_api(domain_file) for domain_file in video_files]
 
+def file_id_get(id_):
+    fs = current_app.config['file_service']
+    return send_file(fs.get_file(id_), download_name=id_)
 
 def file_post(f=None):  # noqa: E501
     """Uploads a audio or video file

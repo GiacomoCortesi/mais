@@ -123,6 +123,38 @@ paths:
       tags:
       - file
       x-openapi-router-controller: openapi_server.controllers.file_controller
+  /file/{id}:
+    get:
+      operationId: file_id_get
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileResponse'
+          description: Job details successfully retrieved
+        "404":
+          content:
+            application/problem+json:
+              example:
+                title: NotFound
+                detail: The requested file ID was not found on the server
+                status: 404
+                type: about:blank
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+          description: Bad Request
+      tags:
+      - file
+      x-openapi-router-controller: openapi_server.controllers.file_controller          
   /job:
     get:
       operationId: job_get

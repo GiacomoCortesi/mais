@@ -4,15 +4,13 @@ import uuid
 import json
 import copy
 from datetime import timedelta
+from openapi_server.domain.exceptions import TranscriptionNotFoundException
 from openapi_server.domain.repositories.transcription_repository import TranscriptionRepository
 from openapi_server.domain.repositories.transcription_repository import InMemoryTranscriptionRepository
 from openapi_server.domain.models.transcription import Transcription
 from openapi_server.domain.models.id import ID
 from typing import IO, List
-
-
-class TranscriptionNotFoundException(Exception):
-    pass
+import logging
 
 
 class TranscriptionService:
@@ -21,7 +19,9 @@ class TranscriptionService:
             openai_token,
             repository: TranscriptionRepository = None):
         self.openai_token = openai_token
+        self.logger = logging.getLogger(__name__)
         if not repository:
+            self.logger.debug("using default in memory transcription repository")
             repository = InMemoryTranscriptionRepository()
         self.repository = repository
 
@@ -37,10 +37,12 @@ class TranscriptionService:
         return self.repository.get_all()
 
     def get(self, id: ID) -> Transcription:
-        transcription = self.repository.get_by_id(id)
-        if not transcription:
-            raise TranscriptionNotFoundException
-        return transcription
+        try:
+            transcription = self.repository.get_by_id(id)
+            return transcription
+        except TranscriptionNotFoundException as e:
+            self.logger.warning(e)
+            raise
 
     def edit(self, id, transcription_data):
         transcription = self.get(id)
@@ -50,8 +52,9 @@ class TranscriptionService:
     def delete(self, id):
         try:
             self.repository.delete(id)
-        except KeyError:
-            raise TranscriptionNotFoundException
+        except TranscriptionNotFoundException as e:
+            self.logger.warning(e)
+            raise
 
     def fit(self, id):
         transcription = self.get(id)

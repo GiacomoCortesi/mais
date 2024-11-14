@@ -1,132 +1,21 @@
 from datetime import datetime
+import logging
 import os
-import string
 from moviepy.editor import VideoFileClip
-import shutil
 from PIL import Image
-from openapi_server.domain.repositories.file_repository import FileRepository, InMemoryFileRepository
+from openapi_server.domain.exceptions import InvalidFileException
+from openapi_server.domain.repositories.file_repository import FileRepository, FileStore, InMemoryFileRepository, LocalFileStore
 from pathlib import Path
 from typing import IO
 from typing import List
 from openapi_server.domain.models.file import File
 from openapi_server.domain.models.transcription import Segment
 import uuid
-from werkzeug.utils import secure_filename
 import boto3
-from abc import ABC, abstractmethod
-from botocore.exceptions import ClientError
 import tempfile
 from remotion_lambda import RenderMediaParams
 from remotion_lambda import RemotionClient
 import io
-
-
-class InvalidFileException(Exception):
-    pass
-
-
-class FileStoreException(Exception):
-    pass
-
-
-class FileRenderException(Exception):
-    pass
-
-
-class FileStore(ABC):
-    @abstractmethod
-    def store(self, filename: str, content: IO[bytes]):
-        pass
-
-    @abstractmethod
-    def get_url(self, filename: str):
-        pass
-
-
-class AWSFileStore(FileStore):
-    def __init__(
-            self,
-            access_key="",
-            secret_key="",
-            region="us-east-1",
-            bucket_name="music-ai-sub-upload-bucket",
-            prefix="uploads/"):
-        if not access_key or not secret_key:
-            access_key = os.getenv("AWS_ACCESS_KEY_ID")
-            secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
-        self.s3 = boto3.client("s3",
-                               aws_access_key_id=access_key,
-                               aws_secret_access_key=secret_key,
-                               region_name=region
-                               )
-        self.prefix = prefix if prefix[-1] == "/" else f"{prefix}/"
-        self.bucket_name = bucket_name
-
-    def store(self, filename: str, content: IO[bytes]):
-        try:
-            self.s3.upload_fileobj(
-                content, self.bucket_name, f"{self.prefix}{filename}")
-        except ClientError as e:
-            raise FileStoreException(f"boto client error: {e}")
-        except Exception as e:
-            raise FileStoreException(f"unexpected error: {e}")
-
-    def get_url(self, filename: str) -> string:
-        return f"https://{self.bucket_name}.s3.amazonaws.com/{self.prefix}{filename}"
-
-    def delete(self, filename: str) -> None:
-        self.s3.delete_object(self.bucket_name, f"{self.prefix}{filename}")
-
-    def delete_all(self) -> None:
-        res = self.s3.list_objects_v2(self.bucket_name, self.prefix)
-        for object in res['Contents']:
-            self.s3.delete_object(self.bucket_name, object['Key'])
-
-
-class LocalFileStore(FileStore):
-    def __init__(self, file_root_dir: Path = "/tmp/mais/file"):
-        self.file_root_dir = file_root_dir
-        os.makedirs(self.file_root_dir, exist_ok=True)
-
-    def _get_file_dir_path(self, filename: Path) -> Path:
-        return self.file_root_dir / Path(filename.stem)
-
-    def _get_file_path(self, filename: Path) -> Path:
-        return self._get_file_dir_path(filename) / filename
-
-    def store(self, filename: string, content: IO[bytes]) -> string:
-        # sanitize filename for secure fs storage
-        filename = Path(secure_filename(filename))
-        if not filename:
-            raise FileStoreException(f"invalid filename: {filename}")
-
-        os.makedirs(self._get_file_dir_path(filename), exist_ok=True)
-
-        file_path = self._get_file_path(filename)
-
-        # write file in chunks
-        chunk_size = 1024 * 1024
-        with open(file_path, 'wb') as file:
-            while True:
-                chunk = content.read(chunk_size)
-                if not chunk:
-                    break
-            file.write(chunk)
-
-        return file_path
-
-    def delete(self, filename: string) -> None:
-        dir_path = self._get_file_dir_path(Path(filename))
-        if dir_path.exists():
-            shutil.rmtree(dir_path)
-
-    def delete_all(self) -> None:
-        for f in os.listdir(self.file_root_dir):
-            shutil.rmtree(self.file_root_dir / Path(f))
-
-    def get_url(self, filename: string) -> str:
-        return f'/videos/{Path(filename).stem}/{filename}'
-
 
 class FileService:
     video_extensions = ['.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv']
@@ -134,12 +23,15 @@ class FileService:
 
     def __init__(self, repository: FileRepository = None,
                  file_store: FileStore = None):
+        self.logger = logging.getLogger(__name__)
+        
         if not repository:
+            self.logger.debug("using default in memory file repository")
             repository = InMemoryFileRepository()
-
         self.repository = repository
 
         if not file_store:
+            self.logger.debug("using default local file store")
             file_store = LocalFileStore()
         self.file_store = file_store
 
@@ -184,11 +76,11 @@ class FileService:
                     preview_image = self._extract_image(temp_file_path)
                     return preview_image
                 except Exception as e:
-                    print(e)
+                    self.logger.warning(f"Failed to extract image from file {temp_file_path}: {e}")
 
     def add(self, filename: Path, content: IO[bytes]):
         if not self.is_valid(filename):
-            raise InvalidFileException
+            raise InvalidFileException(filename)
 
         id = str(uuid.uuid4())
         content.seek(0)
@@ -214,6 +106,9 @@ class FileService:
 
     def get(self, filename: str):
         return self.repository.get_by_id(filename)
+    
+    def get_file(self, filename: str) -> IO[bytes]:
+        return self.file_store.get_file(filename)
 
     def get_all(self) -> List[File]:
         return self.repository.get_all()
@@ -246,9 +141,10 @@ class RemotionFileRender:
         self.region = region
         self.composition = composition
 
+        self.logger = logging.getLogger(__name__)
+
     def render(self, video_url: str = "",
                segments: List[Segment] = [], fps: int = 30) -> IO[bytes]:
-        # Set render request
         render_params = RenderMediaParams(
             composition=self.composition,
             input_props={
@@ -261,15 +157,11 @@ class RemotionFileRender:
         )
         render_response = self.client.render_media_on_lambda(render_params)
         if render_response:
-            # Execute render request
-            print("Render ID:", render_response.render_id)
-            print("Bucket name:", render_response.bucket_name)
-            # Execute progress request
+            self.logger.info(f"render id: {render_response.render_id}, bucket: {render_response.bucket_name}")
             progress_response = self.client.get_render_progress(
                 render_id=render_response.render_id, bucket_name=render_response.bucket_name)
             while progress_response and not progress_response.done:
-                print("Overall progress")
-                print(str(progress_response.overallProgress * 100) + "%")
+                self.logger.info(f"rendering progress: {progress_response.overallProgress * 100}%")
                 progress_response = self.client.get_render_progress(
                     render_id=render_response.render_id, bucket_name=render_response.bucket_name)
             return self._download(

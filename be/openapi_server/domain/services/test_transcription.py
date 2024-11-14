@@ -1,3 +1,4 @@
+from io import BytesIO
 import unittest
 from unittest.mock import MagicMock
 from openapi_server.domain.services.transcription import TranscriptionService
@@ -88,13 +89,13 @@ class TestTranscription(unittest.TestCase):
                                                                                     'word': 'come', 'start': 8.079, 'end': 8.541, 'score': 0.774}, {
                                                                                         'word': 'il', 'start': 8.682, 'end': 8.722, 'score': 0.255}, {
                                                                                             'word': 'mare.', 'start': 8.803, 'end': 9.306, 'score': 0.681}]}], 'word_segments': [], 'language': 'it'}}
-        expected = "1\n0:00:01,099 --> 0:00:02,763\n Cialo come il sole\n\n2\n0:00:04,238 --> 0:00:06,104\n che mi scalda il cuore\n\n3\n0:00:07,556 --> 0:00:09,306\n e blu come il mare.\n\n"
+        expected = BytesIO(b"1\n0:00:01,099 --> 0:00:02,763\n Cialo come il sole\n\n2\n0:00:04,238 --> 0:00:06,104\n che mi scalda il cuore\n\n3\n0:00:07,556 --> 0:00:09,306\n e blu come il mare.\n\n")
         service = TranscriptionService("")
         service.get = MagicMock(
             return_value=Transcription(
                 **transcription_mock))
         srt_content = service.create_srt("dummy_id")
-        self.assertEqual(srt_content, expected)
+        self.assertEqual(srt_content.getvalue(), expected.getvalue())
 
     def test_create_stt(self):
         transcription_mock = {
@@ -121,10 +122,10 @@ class TestTranscription(unittest.TestCase):
                                                                                     'word': 'come', 'start': 8.079, 'end': 8.541, 'score': 0.774}, {
                                                                                         'word': 'il', 'start': 8.682, 'end': 8.722, 'score': 0.255}, {
                                                                                             'word': 'mare.', 'start': 8.803, 'end': 9.306, 'score': 0.681}]}], 'word_segments': [], 'language': 'it'}}
-        expected = "0\n0:00:01,099 --> 0:00:02,763\n Cialo come il sole\n\n1\n0:00:04,238 --> 0:00:06,104\n che mi scalda il cuore\n\n2\n0:00:07,556 --> 0:00:09,306\n e blu come il mare.\n\n"
+        expected = BytesIO(b"0\n0:00:01,099 --> 0:00:02,763\n Cialo come il sole\n\n1\n0:00:04,238 --> 0:00:06,104\n che mi scalda il cuore\n\n2\n0:00:07,556 --> 0:00:09,306\n e blu come il mare.\n\n")
         service = TranscriptionService("")
         service.get = MagicMock(
             return_value=Transcription(
                 **transcription_mock))
         stt_content = service.create_vtt("dummy_id")
-        self.assertEqual(stt_content, expected)
+        self.assertEqual(stt_content.getvalue(), expected.getvalue())

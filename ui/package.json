@@ -30,6 +30,7 @@
 		"@nextui-org/theme": "2.2.5",
 		"@react-aria/ssr": "3.9.4",
 		"@react-aria/visually-hidden": "3.8.12",
+		"@remotion/cli": "4.0.221",
 		"@remotion/lambda": "4.0.221",
 		"@remotion/player": "4.0.221",
 		"aws-sdk": "^2.1691.0",
@@ -42,6 +43,7 @@
 		"react": "18.3.1",
 		"react-dom": "18.3.1",
 		"react-icons": "^5.2.1",
+		"remotion": "4.0.221",
 		"sharp": "^0.33.5"
 	},
 	"devDependencies": {

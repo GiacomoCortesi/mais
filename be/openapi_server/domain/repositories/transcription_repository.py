@@ -1,3 +1,4 @@
+from openapi_server.domain.exceptions import TranscriptionNotFoundException
 from openapi_server.domain.repositories.base_repository import BaseRepository
 from openapi_server.domain.models.transcription import Transcription
 from openapi_server.domain.models.id import ID
@@ -17,7 +18,10 @@ class InMemoryTranscriptionRepository(TranscriptionRepository):
         return list(self.transcriptions.values())
 
     def get_by_id(self, id: ID) -> Transcription:
-        return self.transcriptions.get(id, None)
+        t =  self.transcriptions.get(id, None)
+        if not t:
+            raise TranscriptionNotFoundException(id)
+        return t
 
     def add(self, transcription: Transcription) -> None:
         if not transcription.id:
@@ -25,7 +29,10 @@ class InMemoryTranscriptionRepository(TranscriptionRepository):
         self.transcriptions[transcription.id] = transcription
 
     def delete(self, id: ID) -> None:
-        self.transcriptions.pop(id, None)
+        try:
+            self.transcriptions.pop(id)
+        except KeyError:
+            raise TranscriptionNotFoundException(id)
 
     def delete_all(self) -> None:
         self.transcriptions = {}
