@@ -19,13 +19,6 @@ export default function ConverterPage({ searchParams }: Props) {
       <p className="text-lg">
         Instantly create and edit subtitles from a music video or audio
       </p>
-      <VideoPlayer
-        // segments={segments}
-        segments={[]}
-        src={
-          "http://localhost:8080/file/conquista-cut.mp4"
-        }
-      />
       <Converter videoFile={selectedVideo} />
     </>
   );

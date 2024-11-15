@@ -1,5 +1,6 @@
 from openapi_server.domain.services.job import JobService
-from openapi_server.domain.services.file import FileService, AWSFileStore
+from openapi_server.domain.services.file import FileService
+from openapi_server.domain.repositories.file_repository import AWSFileStore
 from openapi_server.domain.services.transcription import TranscriptionService
 import os
 from redis import Redis

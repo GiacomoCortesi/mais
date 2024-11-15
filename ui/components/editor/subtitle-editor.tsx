@@ -18,6 +18,7 @@ interface Props {
   defaultSegments: ISegment[];
   wordSegments: IWord[];
   transcriptionId: string;
+  filename: string;
 }
 
 export default function SubtitleEditor({
@@ -25,6 +26,7 @@ export default function SubtitleEditor({
   defaultSegments,
   wordSegments,
   transcriptionId,
+  filename,
 }: Props) {
   const [segments, setSegments] = useState<ISegment[]>(defaultSegments);
 
@@ -39,7 +41,7 @@ export default function SubtitleEditor({
 
   const onTextHandler = (
     event: ChangeEvent<HTMLTextAreaElement>,
-    index: number,
+    index: number
   ) => {
     const newSegments = [...segments];
 
@@ -48,7 +50,7 @@ export default function SubtitleEditor({
   };
   const onStartHandler = (
     event: ChangeEvent<HTMLInputElement>,
-    index: number,
+    index: number
   ) => {
     const newSegments = [...segments];
 
@@ -58,11 +60,19 @@ export default function SubtitleEditor({
   };
   const onEndHandler = (
     event: ChangeEvent<HTMLInputElement>,
-    index: number,
+    index: number
   ) => {
+    let value = Number(event.target.value);
+
+    if (value < 0) {
+      value = 0;
+    }
+
+    console.log(value);
+
     const newSegments = [...segments];
 
-    newSegments[index].end = Number(event.target.value);
+    newSegments[index].end = Number(value);
     setSegments(newSegments);
   };
   const onDeleteHandler = (index: number) => {
@@ -90,9 +100,7 @@ export default function SubtitleEditor({
     <div className="flex flex-col gap-4">
       <VideoPlayer
         segments={segments}
-        src={
-          "https://music-ai-sub-upload-bucket.s3.amazonaws.com/uploads/conquista-cut.mp4"
-        }
+        src={`${process.env.NEXT_PUBLIC_API_URL}/file/${filename}`}
       />
       <Button
         className="my-2"

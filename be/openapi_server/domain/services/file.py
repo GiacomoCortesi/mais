@@ -171,4 +171,5 @@ class RemotionFileRender:
         s3 = boto3.client('s3')
         file_obj = io.BytesIO()
         s3.download_fileobj(bucket_name, key, file_obj)
+        file_obj.seek(0)
         return file_obj

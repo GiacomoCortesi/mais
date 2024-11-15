@@ -1,5 +1,6 @@
 import { title } from "@/components/primitives";
 import SubtitleEditor from "@/components/editor/subtitle-editor";
+import { ITranscription } from "@/types/transcription";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const response = await fetch(
@@ -7,15 +8,14 @@ export default async function Page({ params }: { params: { id: string } }) {
     {
       method: "GET",
       cache: "no-store",
-    },
+    }
   );
 
   if (!response.ok) {
     throw new Error("failed to fetch transcription");
   }
 
-  const transcription = await response.json();
-
+  const transcription: ITranscription = await response.json();
   return (
     <div>
       <h1 className={title()}>MAIS Editor</h1>
@@ -24,6 +24,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         language={transcription.data.language}
         transcriptionId={transcription.id}
         wordSegments={transcription.data.word_segments}
+        filename={transcription.filename}
       />
     </div>
   );
