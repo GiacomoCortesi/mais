@@ -1,0 +1,7 @@
+moviepy
+spleeter == 2.4.0
+torch
+whisperx == 3.1.5
+redis
+numpy == 1.26.4
+-e ../../domain

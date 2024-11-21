@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["models", "services", "repositories"]
+
+[project]
+name = "domain"
+version = "0.2.0"
+authors = [
+    {name = "Giacomo Cortesi", email = "giacomo.cortesi1993@gmail.com"},
+]
+description = "Shared MAIS domain models and utilities"
+requires-python = ">=3.8"
+readme = "README.rst"
+dependencies = [
+        "moviepy",
+        "pydantic",
+        "boto3",
+        "remotion-lambda == 4.0.221",
+        "redis"
+]

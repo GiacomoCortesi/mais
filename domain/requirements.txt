@@ -1,0 +1,5 @@
+moviepy == 2.0.0
+pydantic
+redis
+boto3
+remotion-lambda == 4.0.221

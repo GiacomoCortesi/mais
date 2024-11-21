@@ -16,6 +16,8 @@ Main features:
  - redis queue for generation jobs management
  - smart subtitles editor
 
+ [MAIS Architecture](https://ibb.co/x35TZrn)
+
 # Run & Develop
 ## UI
 ```bash
@@ -23,10 +25,9 @@ cd ui
 npm install
 npm run dev
 ```
-
 ## Backend
 Prerequisites:
- - install and start redis server (e.g. with [docker](https://hub.docker.com/_/redis/))
+ - install and start redis stack (e.g. with [docker](https://hub.docker.com/_/redis/))
  - start redis queue worker process:
   `rq worker --with-scheduler`
 

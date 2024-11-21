@@ -15,23 +15,26 @@ services:
       context: ./be
       dockerfile: Dockerfile
     environment:
-      - REDIS_HOST=redis-server
+      - REDIS_HOST=redis-stack
       - REDIS_PORT=6379
     ports:
       - "8080:8080"
     depends_on:
-      - redis-server
-      - redis-queue
+      - redis-stack
 
-  redis-queue:
+  mais:
     build:
-      context: ./be
+      context: ./mais
       dockerfile: Dockerfile
     depends_on:
-      - redis-server
-    command: rq worker 
+      - redis-stack
+    environment:
+      - REDIS_HOST=redis-stack
+      - REDIS_PORT=6379
+      - API_URL=http://mais-be:8080
 
-  redis-server:
-    image: "redis:latest"
+  redis-stack:
+    image: "redis/redis-stack:latest"
     ports:
       - "6379:6379"
+      - "8001:8001"
