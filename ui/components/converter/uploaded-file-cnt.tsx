@@ -6,7 +6,7 @@ export interface Props {
   videoFile: string;
 }
 export default async function UploadedFileCnt({ videoFile }: Props) {
-  const response = await fetch(`${process.env.API_URL}/video`);
+  const response = await fetch(`${process.env.API_URL}/file`);
 
   if (!response.ok) {
     throw new Error("failed to fetch uploaded video files");
@@ -14,8 +14,8 @@ export default async function UploadedFileCnt({ videoFile }: Props) {
 
   const uploaded_video_files: IVideoFile[] = await response.json();
 
-  const selectedVideoFile = uploaded_video_files.filter((value: IVideoFile) => {
-    return value.video_name == videoFile;
+  const selectedVideoFile = uploaded_video_files.filter((value: IFile) => {
+    return value.filename == videoFile;
   })[0];
 
   return (

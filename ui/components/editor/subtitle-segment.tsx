@@ -1,10 +1,10 @@
 "use client";
 
 import React, { ChangeEventHandler, MouseEventHandler } from "react";
-import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Textarea } from "@nextui-org/input";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Textarea } from "@heroui/input";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { Tooltip } from "@nextui-org/tooltip";
+import { Tooltip } from "@heroui/tooltip";
 
 import SubtitleSegmentCounter from "./subtitle-segment-counter";
 

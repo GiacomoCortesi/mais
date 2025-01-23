@@ -8,8 +8,8 @@ import {
   NavbarBrand,
   NavbarItem,
   NavbarMenuItem,
-} from "@nextui-org/navbar";
-import { Link } from "@nextui-org/link";
+} from "@heroui/navbar";
+import { Link } from "@heroui/link";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -70,13 +70,21 @@ export const Navbar = () => {
         ))}
       </NavbarContent>
 
-      <NavbarContent className="" justify="end">
+      <NavbarContent className="" justify="center">
         <NavbarItem className="">
           <Link isExternal aria-label="Github" href={siteConfig.links.github}>
             <GithubIcon className="text-default-500" />
           </Link>
         </NavbarItem>
         <ThemeSwitch />
+      </NavbarContent>
+
+      <NavbarContent className="" justify="end">
+        <NavbarItem className="">
+          <Link isExternal aria-label="API" href={siteConfig.links.api}>
+            API
+          </Link>
+        </NavbarItem>
       </NavbarContent>
 
       <NavbarMenu>

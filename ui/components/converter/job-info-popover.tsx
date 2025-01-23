@@ -1,5 +1,5 @@
 import React from "react";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 import { AiFillInfoCircle } from "react-icons/ai";
 import { AiOutlineCheck } from "react-icons/ai";
 import { AiOutlineClose } from "react-icons/ai";

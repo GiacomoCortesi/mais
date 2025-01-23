@@ -1,7 +1,7 @@
 "use client";
 
 import React, { ChangeEventHandler } from "react";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 
 export interface Props {
   label: string;

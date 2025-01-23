@@ -1,5 +1,5 @@
-import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Divider } from "@nextui-org/divider";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Divider } from "@heroui/divider";
 import Link from "next/link";
 
 import { title } from "@/components/primitives";

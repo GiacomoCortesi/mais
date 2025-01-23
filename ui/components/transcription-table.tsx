@@ -8,8 +8,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-} from "@nextui-org/table";
-import { Tooltip } from "@nextui-org/tooltip";
+} from "@heroui/table";
+import { Tooltip } from "@heroui/tooltip";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import { Key, useCallback } from "react";
 
@@ -32,9 +32,9 @@ export default function TranscriptionTable({ transcriptions }: Props) {
   transcriptions.forEach((transcription, index) => {
     rows.push({
       key: index,
-      file: transcription.video_file,
+      file: transcription.filename,
       language: transcription.data.language,
-      id: transcription.transcription_id,
+      id: transcription.id,
     });
   });
 
@@ -68,9 +68,7 @@ export default function TranscriptionTable({ transcriptions }: Props) {
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                 <AiFillEdit
                   onClick={() => {
-                    router.push(
-                      `/transcription/${transcriptions[index]?.transcription_id}`,
-                    );
+                    router.push(`/transcription/${transcriptions[index]?.id}`);
                   }}
                 />
               </span>
@@ -80,7 +78,7 @@ export default function TranscriptionTable({ transcriptions }: Props) {
                 <AiFillDelete
                   onClick={deleteTranscription.bind(
                     null,
-                    transcriptions[index]?.transcription_id,
+                    transcriptions[index]?.id,
                   )}
                 />
               </span>

@@ -1,5 +1,5 @@
 "use client";
-import { ButtonGroup } from "@nextui-org/button";
+import { ButtonGroup } from "@heroui/button";
 
 import MagicButtonFit from "./magic-button-fit";
 import MagicButtonFix from "./magic-button-fix";

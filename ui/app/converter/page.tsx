@@ -1,5 +1,6 @@
 import { title } from "@/components/primitives";
 import Converter from "@/components/converter/converter";
+import VideoPlayer from "@/components/editor/video-player";
 
 interface Props {
   searchParams: {
