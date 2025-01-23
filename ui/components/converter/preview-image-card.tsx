@@ -1,9 +1,9 @@
-import { Card, CardFooter, CardHeader } from "@nextui-org/card";
+import { Card, CardFooter, CardHeader } from "@heroui/card";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import { usePathname, useRouter } from "next/navigation";
 
-import { deleteVideo } from "@/actions/video";
+import { deleteFile } from "@/actions/file";
 
 import PreviewImage from "./preview-image";
 
@@ -23,7 +23,7 @@ export default function PreviewImageCard({
   const router = useRouter();
   const pathName = usePathname();
 
-  const deleteVideoWithName = deleteVideo.bind(null, alt);
+  const deleteVideoWithName = deleteFile.bind(null, alt);
 
   const onDeleteButtonClick = () => {
     deleteVideoWithName();

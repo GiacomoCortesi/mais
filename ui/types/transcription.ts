@@ -1,8 +1,8 @@
 export interface ITranscription {
-  transcription_id: "string";
+  id: "string";
   data: ITranscriptionData;
   job_id: "string";
-  video_file: "string";
+  filename: "string";
 }
 
 export interface ITranscriptionData {

@@ -3,10 +3,14 @@ export interface ISubtitleJobOptions {
   subtitles_frequency: number;
   language: string;
   model_size: string;
-  hugging_face_token: string;
 }
 
 export interface ISubtitleJobConfig {
   config: ISubtitleJobOptions;
-  video_file: string;
+  filename: string;
+}
+
+export interface ISubtitleJobRequest {
+  id?: string;
+  info?: ISubtitleJobConfig;
 }

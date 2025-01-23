@@ -1,8 +1,8 @@
 "use client";
-import { Image } from "@nextui-org/image";
+import { Image } from "@heroui/image";
 import { FaImage } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 
 export interface Props {
   alt: string;
@@ -16,7 +16,7 @@ export default function PreviewImage({ alt, src, onSelectVideo }: Props) {
   const handleClickOutside = (event: Event) => {
     if (
       cardRefs?.current?.every(
-        (ref) => ref && !ref.contains(event.target as Node)
+        (ref) => ref && !ref.contains(event.target as Node),
       )
     ) {
       onSelectVideo("");
@@ -28,10 +28,10 @@ export default function PreviewImage({ alt, src, onSelectVideo }: Props) {
     const checkImage = async () => {
       if (src) {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}${src}`,
+          `${src}`,
           {
             method: "HEAD",
-          }
+          },
         );
 
         if (response.ok) {
@@ -54,7 +54,7 @@ export default function PreviewImage({ alt, src, onSelectVideo }: Props) {
           isZoomed
           alt={alt}
           className="object-fit w-full h-28"
-          src={`${process.env.NEXT_PUBLIC_API_URL}${src}`}
+          src={`${src}`}
           onClick={() => {
             onSelectVideo(alt);
           }}

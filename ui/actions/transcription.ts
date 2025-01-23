@@ -16,7 +16,7 @@ export async function createTranscription(
     body: JSON.stringify({
       data: transcription,
       job_id: jobId,
-      video_file: videoFile,
+      filename: videoFile,
     }),
   });
 

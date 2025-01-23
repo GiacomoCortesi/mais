@@ -5,13 +5,15 @@ import { ChangeEvent } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { uploadVideo } from "@/actions/video";
+import { uploadFile } from "@/actions/file";
+import {Progress} from "@heroui/progress";
 
 export default function FileUpload() {
   const router = useRouter();
   const pathName = usePathname();
 
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
@@ -22,7 +24,9 @@ export default function FileUpload() {
 
     data.set("file", selectedFile);
 
-    await uploadVideo(data);
+    setIsLoading(true);
+    await uploadFile(data);
+    setIsLoading(false);
 
     // Update the URL's search parameters
     const newSearchParams = new URLSearchParams();
@@ -40,7 +44,7 @@ export default function FileUpload() {
   };
 
   return (
-    <div className="flex w-full items-center justify-center m-2">
+    <div className="flex w-full items-center justify-center m-2 flex-col space-y-4">
       <label
         className={`${isDragging && "dark:border-purple-500 dark:bg-gray-900 bg-gray-100"} flex flex-col items-center justify-center w-full h-64 border-3 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-900 dark:bg-gray-800 hover:bg-gray-100 dark:border-purple-600 dark:hover:border-purple-500`}
         htmlFor="dropzone-file"
@@ -68,6 +72,7 @@ export default function FileUpload() {
           <p className="text-xs text-gray-500 dark:text-gray-400">M4A, MOV</p>
         </div>
         <input
+          disabled={isLoading}
           className="opacity-0 w-full h-full"
           id="dropzone-file"
           type="file"
@@ -76,6 +81,7 @@ export default function FileUpload() {
           onDragLeave={handleDragLeave}
         />
       </label>
+      {isLoading && <Progress isIndeterminate aria-label="Loading..." color="secondary" className="max-w-md" size="md" />}
     </div>
   );
 }

@@ -15,7 +15,7 @@ export default function UploadedFile({ uploadedFile }: Props) {
         {uploadedFile ? (
           <PreviewImageCard
             isSelected
-            alt={uploadedFile.video_name}
+            alt={uploadedFile.filename}
             src={uploadedFile.image_url}
             onSelectVideo={(_: string) => {}}
           />

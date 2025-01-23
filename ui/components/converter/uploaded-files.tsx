@@ -41,9 +41,9 @@ export default function UploadedFiles({ uploaded_video_files }: Props) {
         uploaded_video_files.map((uploaded_video_file) => {
           return (
             <PreviewImageCard
-              key={uploaded_video_file.video_id}
-              alt={uploaded_video_file.video_name}
-              isSelected={uploaded_video_file.video_name === selectedVideo}
+              key={uploaded_video_file.id}
+              alt={uploaded_video_file.filename}
+              isSelected={uploaded_video_file.filename === selectedVideo}
               src={uploaded_video_file.image_url}
               onSelectVideo={onSelectVideo}
             />
