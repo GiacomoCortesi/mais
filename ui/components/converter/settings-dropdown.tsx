@@ -4,11 +4,11 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownItem,
-} from "@nextui-org/dropdown";
-import { Button } from "@nextui-org/button";
-import { Slider } from "@nextui-org/slider";
-import { Select, SelectItem } from "@nextui-org/select";
-import { Switch } from "@nextui-org/switch";
+} from "@heroui/dropdown";
+import { Button } from "@heroui/button";
+import { Slider } from "@heroui/slider";
+import { Select, SelectItem } from "@heroui/select";
+import { Switch } from "@heroui/switch";
 import React from "react";
 
 import { ISubtitleJobOptions } from "@/types/job";

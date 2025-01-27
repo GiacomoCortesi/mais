@@ -25,5 +25,6 @@ export const siteConfig = {
   ],
   links: {
     github: "https://github.com/GiacomoCortesi/music-ai-sub",
+    api: `${process.env.API_URL}/docs`,
   },
 };

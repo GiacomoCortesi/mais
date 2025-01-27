@@ -1,0 +1,8 @@
+fastapi[standard]
+datamodel-code-generator
+boto3
+moviepy
+remotion-lambda==4.0.252
+werkzeug
+requests
+redis

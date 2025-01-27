@@ -1,4 +1,4 @@
-import { ITranscriptionData } from "@/types/transcription";
+import { ITranscription, ITranscriptionData } from "@/types/transcription";
 
 import {
   revalidateTranscription,
@@ -16,7 +16,7 @@ export async function createTranscription(
     body: JSON.stringify({
       data: transcription,
       job_id: jobId,
-      video_file: videoFile,
+      filename: videoFile,
     }),
   });
 
@@ -65,14 +65,14 @@ export async function fixTranscription(transcriptionId: string) {
 
 export async function editTranscription(
   transcriptionId: string,
-  transcription: ITranscriptionData,
+  transcription: ITranscription,
 ) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/transcription/${transcriptionId}`,
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: transcription }),
+      body: JSON.stringify(transcription),
     },
   );
 

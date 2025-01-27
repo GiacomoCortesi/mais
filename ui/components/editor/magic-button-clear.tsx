@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import { AiOutlineClear } from "react-icons/ai";
 import { useState } from "react";
 

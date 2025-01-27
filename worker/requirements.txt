@@ -1,0 +1,6 @@
+moviepy
+whisperx==3.3.1
+redis
+demucs==4.0.1
+redis
+requests

@@ -2,8 +2,8 @@
 
 import React, { ChangeEvent } from "react";
 import { useState, useEffect } from "react";
-import { Button } from "@nextui-org/button";
-import { Tooltip } from "@nextui-org/tooltip";
+import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 
 import { ISegment, IWord } from "@/types/transcription";
@@ -11,12 +11,16 @@ import SubtitleSegment from "@/components/editor/subtitle-segment";
 import { editTranscription } from "@/actions/transcription";
 
 import MagicButtons from "./magic-buttons";
+import { VideoPreview } from "./video-preview";
+import { ISubtitleConfig } from "@/types/video";
 
 interface Props {
   language: string;
   defaultSegments: ISegment[];
   wordSegments: IWord[];
   transcriptionId: string;
+  filename: string;
+  defaultSubtitleConfig: ISubtitleConfig
 }
 
 export default function SubtitleEditor({
@@ -24,8 +28,11 @@ export default function SubtitleEditor({
   defaultSegments,
   wordSegments,
   transcriptionId,
+  filename,
+  defaultSubtitleConfig
 }: Props) {
   const [segments, setSegments] = useState<ISegment[]>(defaultSegments);
+  const [subtitleConfig, setSubtitleConfig] = useState<ISubtitleConfig>(defaultSubtitleConfig);
 
   // update subtitle segments everytime the defaultSegments props change (e.g. due to a Clear magic button click)
   useEffect(() => {
@@ -38,7 +45,7 @@ export default function SubtitleEditor({
 
   const onTextHandler = (
     event: ChangeEvent<HTMLTextAreaElement>,
-    index: number,
+    index: number
   ) => {
     const newSegments = [...segments];
 
@@ -47,7 +54,7 @@ export default function SubtitleEditor({
   };
   const onStartHandler = (
     event: ChangeEvent<HTMLInputElement>,
-    index: number,
+    index: number
   ) => {
     const newSegments = [...segments];
 
@@ -57,11 +64,19 @@ export default function SubtitleEditor({
   };
   const onEndHandler = (
     event: ChangeEvent<HTMLInputElement>,
-    index: number,
+    index: number
   ) => {
+    let value = Number(event.target.value);
+
+    if (value < 0) {
+      value = 0;
+    }
+
+    console.log(value);
+
     const newSegments = [...segments];
 
-    newSegments[index].end = Number(event.target.value);
+    newSegments[index].end = Number(value);
     setSegments(newSegments);
   };
   const onDeleteHandler = (index: number) => {
@@ -87,13 +102,22 @@ export default function SubtitleEditor({
 
   return (
     <div className="flex flex-col gap-4">
+      <VideoPreview
+        subtitleConfig={subtitleConfig}
+        setSubtitleConfig={setSubtitleConfig}
+        segments={segments}
+        filename={filename}
+      />
       <Button
         className="my-2"
         color="secondary"
         onClick={editTranscription.bind(null, transcriptionId, {
-          language: language,
-          segments: segments,
-          word_segments: wordSegments,
+          data: {
+            language: language,
+            segments: segments,
+            word_segments: wordSegments,
+          },
+          subtitle_config: subtitleConfig,
         })}
       >
         SAVE

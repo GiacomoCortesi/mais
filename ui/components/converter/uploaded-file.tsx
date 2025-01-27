@@ -1,11 +1,11 @@
 "use client";
 
-import { IVideoFile } from "@/types/video";
+import { IFile } from "@/types/video";
 
 import PreviewImageCard from "./preview-image-card";
 
 export interface Props {
-  uploadedFile: IVideoFile;
+  uploadedFile: IFile;
 }
 
 export default function UploadedFile({ uploadedFile }: Props) {
@@ -15,7 +15,7 @@ export default function UploadedFile({ uploadedFile }: Props) {
         {uploadedFile ? (
           <PreviewImageCard
             isSelected
-            alt={uploadedFile.video_name}
+            alt={uploadedFile.filename}
             src={uploadedFile.image_url}
             onSelectVideo={(_: string) => {}}
           />
