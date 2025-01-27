@@ -1,4 +1,4 @@
-import { IVideoFile } from "@/types/video";
+import { IFile } from "@/types/video";
 
 import UploadedFile from "./uploaded-file";
 
@@ -12,7 +12,7 @@ export default async function UploadedFileCnt({ videoFile }: Props) {
     throw new Error("failed to fetch uploaded video files");
   }
 
-  const uploaded_video_files: IVideoFile[] = await response.json();
+  const uploaded_video_files: IFile[] = await response.json();
 
   const selectedVideoFile = uploaded_video_files.filter((value: IFile) => {
     return value.filename == videoFile;

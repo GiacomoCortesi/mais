@@ -1,7 +1,6 @@
 from api.repositories.base import BaseRepository, NotFoundException
 from api.models import TranscriptionResponse as Transcription
 from typing import Dict, List
-import uuid
 
 class TranscriptionNotFoundException(NotFoundException):
     def __init__(self, transcription_id: str):

@@ -12,7 +12,7 @@ file_repository = InMemoryFileRepository()
 file_store = AWSFileStore()
 
 
-redis_client = redis.StrictRedis(host="localhost", port=6379, decode_responses=True)
+redis_client = redis.StrictRedis(host=os.getenv("REDIS_HOST", "0.0.0.0"), port=os.getenv("REDIS_PORT", 6379), decode_responses=True)
 
 def get_file_repository() -> FileRepository:
     return file_repository

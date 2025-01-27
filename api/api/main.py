@@ -1,13 +1,17 @@
+import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from api.repositories.base import NotFoundException
-from api.repositories.file import FileNotFoundException
-from api.repositories.transcription import TranscriptionNotFoundException
 from api.routers.file import file_router
 from api.routers.job import job_router
 from api.routers.transcription import transcription_router
+from api.services.file import RemotionFileRender
+
 
 from fastapi.middleware.cors import CORSMiddleware
+
+logging.basicConfig(level=logging.DEBUG, 
+                    format="%(asctime)s - %(levelname)s - %(message)s")
 
 app = FastAPI()
 
@@ -19,6 +23,13 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all HTTP methods
     allow_headers=["*"],  # Allows all headers
 )
+
+@app.exception_handler(Exception)
+def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error", "error": str(exc)},
+    )
 
 @app.exception_handler(NotFoundException)
 def not_found_exception_handler(request: Request, exc: Exception):

@@ -1,11 +1,11 @@
 "use client";
 
-import { IVideoFile } from "@/types/video";
+import { IFile } from "@/types/video";
 
 import PreviewImageCard from "./preview-image-card";
 
 export interface Props {
-  uploadedFile: IVideoFile;
+  uploadedFile: IFile;
 }
 
 export default function UploadedFile({ uploadedFile }: Props) {

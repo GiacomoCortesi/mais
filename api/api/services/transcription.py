@@ -48,6 +48,7 @@ class TranscriptionService:
     def edit(self, id: str, transcription_request: TranscriptionRequest):
         transcription = self.get(id)
         transcription.data = copy.deepcopy(transcription_request.data)
+        transcription.subtitle_config = copy.deepcopy(transcription_request.subtitle_config)
         self.repository.update(transcription)
 
     def delete(self, id: str) -> None:

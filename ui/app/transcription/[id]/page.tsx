@@ -20,6 +20,12 @@ export default async function Page({ params }: { params: { id: string } }) {
     <div>
       <h1 className={title()}>MAIS Editor</h1>
       <SubtitleEditor
+        defaultSubtitleConfig={transcription?.subtitle_config || {
+          font: "Arial",
+          size: 30,
+          color: "#ffffff",
+          position: 90,
+        }}
         defaultSegments={transcription.data.segments}
         language={transcription.data.language}
         transcriptionId={transcription.id}

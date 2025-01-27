@@ -12,6 +12,7 @@ import {
 
 import Snackbar from "@/components/snackbar";
 import { ChevronDownIcon } from "@/components/icons";
+import { SharedSelection } from "@heroui/system";
 
 interface Props {
   transcriptionId: string;
@@ -20,7 +21,9 @@ interface Props {
 export default function MagicButtonExport({ transcriptionId }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedOption, setSelectedOption] = useState(new Set(["srt"]));
+  const [selectedOption, setSelectedOption] = useState<SharedSelection>(
+    new Set(["srt"])
+  );
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const onClick = async () => {

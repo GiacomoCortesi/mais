@@ -11,7 +11,8 @@ import SubtitleSegment from "@/components/editor/subtitle-segment";
 import { editTranscription } from "@/actions/transcription";
 
 import MagicButtons from "./magic-buttons";
-import VideoPlayer from "./video-player";
+import { VideoPreview } from "./video-preview";
+import { ISubtitleConfig } from "@/types/video";
 
 interface Props {
   language: string;
@@ -19,6 +20,7 @@ interface Props {
   wordSegments: IWord[];
   transcriptionId: string;
   filename: string;
+  defaultSubtitleConfig: ISubtitleConfig
 }
 
 export default function SubtitleEditor({
@@ -27,8 +29,10 @@ export default function SubtitleEditor({
   wordSegments,
   transcriptionId,
   filename,
+  defaultSubtitleConfig
 }: Props) {
   const [segments, setSegments] = useState<ISegment[]>(defaultSegments);
+  const [subtitleConfig, setSubtitleConfig] = useState<ISubtitleConfig>(defaultSubtitleConfig);
 
   // update subtitle segments everytime the defaultSegments props change (e.g. due to a Clear magic button click)
   useEffect(() => {
@@ -98,17 +102,22 @@ export default function SubtitleEditor({
 
   return (
     <div className="flex flex-col gap-4">
-      <VideoPlayer
+      <VideoPreview
+        subtitleConfig={subtitleConfig}
+        setSubtitleConfig={setSubtitleConfig}
         segments={segments}
-        src={`${process.env.NEXT_PUBLIC_API_URL}/file/${filename}`}
+        filename={filename}
       />
       <Button
         className="my-2"
         color="secondary"
         onClick={editTranscription.bind(null, transcriptionId, {
-          language: language,
-          segments: segments,
-          word_segments: wordSegments,
+          data: {
+            language: language,
+            segments: segments,
+            word_segments: wordSegments,
+          },
+          subtitle_config: subtitleConfig,
         })}
       >
         SAVE
