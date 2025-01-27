@@ -1,8 +1,11 @@
+import { ISubtitleConfig } from "./video";
+
 export interface ITranscription {
-  id: "string";
+  id?: "string";
   data: ITranscriptionData;
-  job_id: "string";
-  filename: "string";
+  job_id?: "string";
+  filename?: "string";
+  subtitle_config?: ISubtitleConfig;
 }
 
 export interface ITranscriptionData {

@@ -6,13 +6,15 @@ import { useEffect, useState } from "react";
 import { ISegment } from "@/types/transcription";
 
 import { VideoWithSubtitles } from "../../remotion/video-with-subtitles/video-with-subtitles";
+import { ISubtitleConfig } from "@/types/video";
 
 interface Props {
   src: string;
   segments: ISegment[];
+  subtitleConfig: ISubtitleConfig
 }
 
-export default function VideoPlayer({ src, segments }: Props) {
+export default function VideoPlayer({ src, segments, subtitleConfig }: Props) {
   const [compositionWidth, setCompositionWidth] = useState<number>(1080);
   const [compositionHeight, setCompositionHeight] = useState<number>(1920);
 
@@ -31,20 +33,19 @@ export default function VideoPlayer({ src, segments }: Props) {
   const fps = 30;
 
   return (
-    <>
+    <div className="my-2">
       <Player
         compositionHeight={compositionHeight}
         compositionWidth={compositionWidth}
         controls={true}
         fps={fps}
         showVolumeControls={true}
-        inputProps={{ src: src, segments: segments, fps }}
+        inputProps={{ src: src, segments: segments, fps, subtitleConfig }}
         durationInFrames={Math.ceil(segments[segments.length - 1].end * 30)}
-        // durationInFrames={300}
         style={{ margin: "auto", height: 500 }}
         // eslint-disable-next-line jsx-a11y/media-has-caption
         component={VideoWithSubtitles}
       />
-    </>
+    </div>
   );
 }

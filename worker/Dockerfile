@@ -14,5 +14,6 @@ ENV REDIS_HOST=redis-server
 ENV REDIS_PORT=6379
 ENV API_HOST=api-server
 ENV API_PORT=8000
+ENV HUGGING_FACE_TOKEN=""
 
 CMD ["python3", "worker/mais.py"]

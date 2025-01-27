@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 
-import { IVideoFile } from "@/types/video";
+import { IFile } from "@/types/video";
 
 import PreviewImageCard from "./preview-image-card";
 
 export interface Props {
-  uploaded_video_files: IVideoFile[];
+  uploaded_video_files: IFile[];
 }
 
 export default function UploadedFiles({ uploaded_video_files }: Props) {

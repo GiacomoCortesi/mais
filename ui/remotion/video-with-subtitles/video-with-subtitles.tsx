@@ -6,6 +6,7 @@ export const VideoWithSubtitles = ({
   src,
   segments,
   fps,
+  subtitleConfig,
 }: IVideoWithSubtitlesProps) => {
   return (
     <AbsoluteFill>
@@ -18,13 +19,14 @@ export const VideoWithSubtitles = ({
         >
           <div
             style={{
+              fontFamily: `${subtitleConfig?.font}`,
               position: "absolute",
-              bottom: "20%",
+              bottom: `${subtitleConfig?.position}%`,
               width: "100%",
               textAlign: "center",
-              fontSize: "100px",
-              color: "white",
-              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
+              fontSize:  `${subtitleConfig?.size}px`,
+              color: `${subtitleConfig?.color}`,
+              // textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
             }}
           >
             {segment.text}

@@ -6,12 +6,15 @@ import requests
 import threading
 from pathlib import Path
 
+hugging_face_token = os.getenv("HUGGING_FACE_TOKEN")
+
 r = redis.Redis(host=os.getenv("REDIS_HOST", "0.0.0.0"), port=os.getenv("REDIS_PORT", "6379"), db=0)
 
+api_host = os.getenv("API_HOST", "localhost")
+api_port = os.getenv("API_PORT", "8000")
+api_url = f'http://{api_host}:{api_port}'
+
 def get_file(filename: str):
-    api_host = os.getenv("API_HOST", "localhost")
-    api_port = os.getenv("API_PORT", "8000")
-    api_url = f'http://{api_host}:{api_port}'
     response = requests.get(f'{api_url}/file/{filename}')
     if response.status_code != 200:
         return
@@ -25,25 +28,36 @@ def cleanup_job(job_id, delay: float=30):
         time.sleep(delay)
     r.json().delete(f'job:{job_id}', '$')
 
+def fail_job(job_id: str, reason: str) -> None:
+    r.json().set(f'job:{job_id}', 'status', 'failed')
+    r.json().set(f'job:{job_id}', 'error', reason)
+    cleanup_job(job_id)
+
 def process_job(job_id):
     print(f"Processing job: {job_id}")
-    queue_job = r.json().get(f'job:{job_id}')
-    job = queue_job
-    # job = Job(**queue_job)
-    # job_filename = job_info.get('filename', '')
+    job = r.json().get(f'job:{job_id}')
 
-    # job_config = job_info.get('config', {})
-    # if not job.info.filename:
-    #     return
-    filename = job["info"]["filename"]
-    job_config = job["info"]["config"]
-    get_file(filename)
-    subtitle_service = SubtitleService(**job_config, hugging_face_token="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")
+    job_info = job.get('info')
+    filename = job_info.get('filename')
+    job_config = job_info.get('config')
+    if not job_info or not filename or not job_config:
+        fail_job(job_id, 'invalid job')
+
+    try:
+        get_file(filename)
+    except Exception as e:
+        fail_job(job_id, str(e))
+
     r.json().set(f'job:{job_id}', 'status', 'running')
-    result = subtitle_service.generate_subtitles(Path(filename))
-    # result = subtitle_service.generate_subtitles_mock()
-    r.json().set(f'job:{job_id}', 'status', 'completed')
-    r.json().set(f'job:{job_id}', 'data', result)
+    
+    try:
+        subtitle_service = SubtitleService(**job_config, hugging_face_token=hugging_face_token)
+        result = subtitle_service.generate_subtitles(Path(filename))
+        r.json().set(f'job:{job_id}', 'status', 'completed')
+        r.json().set(f'job:{job_id}', 'data', result)
+    except Exception as e:
+        fail_job(job_id, str(e))
+
 
 def jobs_loop():
     print("Starting jobs loop")
@@ -53,10 +67,9 @@ def jobs_loop():
     while True:
         job_id = r.lpop('subtitle')
         if job_id:
-            # t = threading.Thread(target=process_job, args=(job_id.decode('utf-8'),))
-            # t.start()
             try:
-                process_job(job_id.decode())
+                t = threading.Thread(target=process_job, args=(job_id.decode('utf-8'),))
+                t.start()
             except Exception as e:
                 try:
                     failed_jobs_dict[job_id] += 1

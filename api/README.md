@@ -58,3 +58,27 @@ Build the api docker image
 Run the docker image
 
 `docker run -p 80:80 --rm mais-api`
+
+### Upgrade remotion
+
+Update all remotion npm packages to same version:
+
+```
+npx remotion upgrade
+```
+
+Re-deploy lambda function
+
+```
+npx remotion lambda functions deploy
+```
+
+Re-deploy remotion site:
+
+```
+npx remotion lambda sites create src/index.ts --site-name=remotion-site-dev
+```
+
+Set the updated lambda function in api REMOTION_APP_FUNCTION_NAME env variable
+
+Update pip remotion package to desired version in requirements.txt

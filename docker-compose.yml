@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mais-ui:
     build:
@@ -8,30 +6,49 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - mais-be
+      - mais-api
 
-  mais-be:
+  mais-api:
     build:
-      context: ./be
+      context: ./api
       dockerfile: Dockerfile
     environment:
-      - REDIS_HOST=redis-server
-      - REDIS_PORT=6379
+      - REDIS_HOST=${REDIS_HOST:-redis-stack}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - REMOTION_APP_FUNCTION_NAME=${REMOTION_APP_FUNCTION_NAME}
+      - REMOTION_APP_SERVE_URL=${REMOTION_APP_SERVE_URL}
     ports:
-      - "8080:8080"
-    depends_on:
-      - redis-server
-      - redis-queue
+      - "8000:8000"
+    # depends_on:
+    #   - redis-stack
+    #   - mais-worker
 
-  redis-queue:
+  mais-worker:
     build:
-      context: ./be
+      context: ./worker
       dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=${REDIS_HOST:-redis-stack}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - API_HOST=${API_HOST:-mais-api}
+      - API_PORT=${API_PORT:-8000}
+      - HUGGING_FACE_TOKEN=${HUGGING_FACE_TOKEN}
     depends_on:
-      - redis-server
-    command: rq worker 
+      - redis-stack
 
-  redis-server:
-    image: "redis:latest"
+  redis-stack:
+    image: redis/redis-stack:latest
+    container_name: redis-stack
     ports:
       - "6379:6379"
+      - "8001:8001"
+    environment:
+      - REDIS_ARGS=--save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
+    driver: local

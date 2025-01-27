@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -39,9 +39,9 @@ class Status(str, Enum):
 
 class Word(BaseModel):
     word: str = Field("", title='word')
-    start: float = Field(..., title='start')
-    end: float = Field(..., title='end')
-    score: float = Field(..., title='score')
+    start: Optional[float] = Field(0, title='start')
+    end: Optional[float] = Field(0, title='end')
+    score: Optional[float] = Field(0, title='score')
 
 
 class Segment(BaseModel):
@@ -63,7 +63,9 @@ class FileResponse(BaseModel):
     upload_date: Optional[datetime] = Field(None, title='upload_date')
     video_url: Optional[str] = Field(None, title='video_url')
     image_url: Optional[str] = Field(None, title='image_url')
-
+    width: Optional[int] = Field(None, title="Width", description="Width of the video")
+    height: Optional[int] = Field(None, title="Height", description="Height of the video")
+    duration: Optional[float] = Field(None, title="Duration", description="Duration of the video")
 
 class ErrorModel(BaseModel):
     title: Optional[str] = Field(None, title='title')
@@ -85,6 +87,7 @@ class TranscriptionRequest(BaseModel):
     data: TranscriptionData = None
     job_id: Optional[str] = Field(None, title='job_id')
     filename: Optional[str] = Field(None, title='filename')
+    subtitle_config: Optional[SubtitleConfig] = None
     
 class TranscriptionResponse(BaseModel):
     id: str = Field(None, title='id')
@@ -92,7 +95,13 @@ class TranscriptionResponse(BaseModel):
     job_id: str = Field(None, title='job_id')
     filename: str = Field(None, title='filename')
     original_data: TranscriptionData
+    subtitle_config: Optional[SubtitleConfig] = None
 
+class SubtitleConfig(BaseModel):
+    position: int = Field(50, description="Position of the subtitle in % for bottom to top.")
+    color: str = Field("#FFFFFF", pattern=r"^#[0-9A-Fa-f]{6}$", description="Hexadecimal color code for the subtitle.")
+    size: int = Field("20", ge=0, le=150, description="Font size of the subtitle. Must be between 10 and 50.")
+    font: str = Field('"Arial", sans-serif', description="Font family for the subtitle.")
 
 class FieldTranscriptionPostRequest(BaseModel):
     schema_: Optional[TranscriptionRequest] = Field(None, alias='schema')

@@ -23,4 +23,5 @@ REDIS_HOST=redis-server
 REDIS_PORT=6379
 API_HOST=api-server
 API_PORT=8000
+HUGGING_FACE_TOKEN=<your-hugging-face-token>
 ```

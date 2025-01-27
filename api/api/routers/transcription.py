@@ -86,9 +86,14 @@ def transcription_id_export(
         f = file_service.get(transcription.filename)
         rfr = RemotionFileRender()
         filename = f"{id}-render.mp4"
+    
         content = rfr.render(
             video_url=f.video_url,
-            segments=transcription.data.segments
+            segments=transcription.data.segments,
+            width=f.width,
+            height=f.height,
+            duration=f.duration,
+            subtitle_config=transcription.subtitle_config
         )
     else:
         raise HTTPException(
@@ -98,7 +103,7 @@ def transcription_id_export(
     
     return StreamingResponse(
         content,
-        media_type="application/octet-stream",
+        media_type="video/mp4",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
 
